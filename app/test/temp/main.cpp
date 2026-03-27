@@ -1,73 +1,52 @@
 #include <iostream>
+
+#include <cmath>
+
 using namespace std;
 
-int gcd(int a, int b) {
-    if (b == 0)
-        return a;
-    return gcd(b, a % b);
-}
-
-class Fraction {
-    int under;
-    int above;
-
-    double value() const {
-        return static_cast<double>(above) / under;
+class Point { // Point类定义
+  public:     // 外部接口
+    Point(int newx = 0, int newy = 0, int times = 0) {
+        x = newx;
+        y = newy;
+        TimesofGetMysize = times;
     }
 
-  public:
-    Fraction(int a = 1, int u = 1) : under(u), above(a) {}
-    Fraction(double val) {
-        under = 1000;
-        above = static_cast<int>(val * under);
-        int g = gcd(under, above);
-        under /= g;
-        above /= g;
+    int& getX() { return x; }
+    int getX() const { return x; }
+    int& getY() { return y; }
+    int getY() const { return y; }
+
+    int getMysize() {
+        TimesofGetMysize++;
+        return Mysize;
     }
 
-    Fraction operator+(const Fraction& other) const {
-        int new_under = under * other.under;
-        int new_above = above * other.under + other.above * under;
+    int getTimesofGetMysize() { return TimesofGetMysize; }
 
-        int g = gcd(new_under, new_above);
-        new_under /= g;
-        new_above /= g;
+    friend float dist(const Point& p1, const Point& p2);
+    friend float dist(Point& p1, const Point& p2);
 
-        return Fraction(new_above, new_under);
-    }
-
-    Fraction operator-(const Fraction& other) const {
-        int new_under = under * other.under;
-        int new_above = above * other.under - other.above * under;
-
-        int g = gcd(new_under, new_above);
-        new_under /= g;
-        new_above /= g;
-
-        return Fraction(new_above, new_under);
-    }
-
-    double to_double() const {
-        return value();
-    }
-
-    void Show() {
-        if (under < 0) {
-            under = -under;
-            above = -above;
-        }
-        cout << above << "/" << under;
-    }
+  private: // 私有数据成员，数据成员的定义没有错
+    int x, y;
+    int TimesofGetMysize;
+    const int Mysize = sizeof(Point);
 };
 
-void fswap(Fraction& a, Fraction& b) {
-    Fraction temp = a;
-    a = b;
-    b = temp;
+void TestFun(Point p) {
+    cout << "TestFun is " << p.getX();
 }
 
-void ifLessSwap(Fraction& a, Fraction& b) {
-    if (a.to_double() < b.to_double()) {
-        fswap(a, b);
-    }
+float dist(const Point& p1, Point& p2) {
+    double x = p1.getX() - p2.getX();
+    double y = p1.getY() - p2.getY();
+    p2.getX()++;
+    return static_cast<float>(sqrt(x * x + y * y));
+}
+
+float dist(Point& p1, const Point& p2) {
+    double x = p1.getX() - p2.getX();
+    double y = p1.getY() - p2.getY();
+    p1.getX()++;
+    return static_cast<float>(sqrt(x * x + y * y));
 }

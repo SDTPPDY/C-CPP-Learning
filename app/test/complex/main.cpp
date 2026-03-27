@@ -1,42 +1,63 @@
 #include <complex>
 #include <iostream>
 #include <utility>
+#include <vector>
 using namespace std;
 
-pair<complex<double>, complex<double>> solve(complex<double> a, complex<double> b, complex<double> c) {
-    complex<double> delta = b * b - 4.0 * a * c;
-    delta = sqrt(delta);
-    complex<double> root1 = (-b + delta) / (2.0 * a);
-    complex<double> root2 = (-b - delta) / (2.0 * a);
-    return {root1, root2};
+#define int long long
+#define EPS 10e-9
+
+vector<complex<double>> solve(vector<vector<complex<double>>>& x, vector<complex<double>>& y) {
+
+    for (int i = 0; i < 3; ++i) {
+        complex<double> val = x[i][0];
+
+        for (int j = 0; j < 3; ++j) {
+            x[i][j] /= pow(val, 2 - i); // x ** 2 // x[i][0]
+        }
+
+        y[i] /= val;
+    }
+
+    for (int i = 2; i > 0; --i) {
+        y[i] -= y[0];
+        for (int j = 0; j < 3; ++j) {
+            x[i][j] -= x[0][j];
+        }
+    }
+
+    for (int i = 1; i < 3; ++i) {
+        complex<double> val = x[i][1];
+
+        for (int j = 0; j < 3; ++j) {
+            x[i][j] /= pow(val, 2 - i); // x ** 2 // x[i][0]
+        }
+
+        y[i] /= val;
+    }
+
+    // return {a, b, c};
 }
 
-int main() {
-    double a, ai, b, bi, c, ci;
-    cin >> a >> ai >> b >> bi >> c >> ci;
-
-    complex<double> complex_a(a, ai);
-    complex<double> complex_b(b, bi);
-    complex<double> complex_c(c, ci);
-
-    auto root = solve(complex_a, complex_b, complex_c);
-    complex<double> root1 = root.first;
-    complex<double> root2 = root.second;
-
-    if (root1.imag() < 0 && root2.imag() >= 0) {
-        swap(root1, root2);
+signed main() {
+    vector<complex<double>> xy(6);
+    for (int i = 0; i < 6; i++) {
+        double real, imag;
+        cin >> real >> imag;
+        xy[i] = complex<double>(real, imag);
     }
 
-    for (int i = 0; i < 2; ++i) {
-        complex<double> root = (i == 0) ? root1 : root2;
-        if (root.imag() < 0) {
-            printf("(%.2lf-%.2lfi)", root.real(), -root.imag());
+    vector<vector<complex<double>>> matrix_x(3, vector<complex<double>>(3));
+    vector<complex<double>> matrix_y(3);
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            matrix_x[i][j] = pow(xy[(i - 1) * 2], j);
         }
-        else {
-            printf("(%.2lf+%.2lfi)", root.real(), root.imag());
-        }
-        cout << endl;
+
+        matrix_y[i] = xy[(i - 1) * 2 + 1];
     }
+
+    vector<complex<double>> result = solve(matrix_x, matrix_y);
 
     return 0;
 }
